@@ -1,0 +1,25 @@
+{% extends "appbar.html" %}
+{% block body %}
+
+    {% if method == "create" %}
+        <h1>create post.</h1>
+        <form action="{% url 'create_post'%}" method="post">
+            {% csrf_token %}
+            <p>fill the post content below</p>
+            <textarea name='content' id='content' required></textarea>
+            <br>
+            <button type='submit'>post</button>
+        </form>
+    {% else %}
+        <h1>update post.</h1>
+        <form action="{% url 'edit_post' post.id %}" method="post">
+            {% csrf_token %}
+            <textarea name='content' id='content' required>{{post.content}}</textarea>
+            <br>
+            <button type='submit'>update</button>
+        </form>
+    {% endif %}
+
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+{% endblock %}

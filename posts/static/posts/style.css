@@ -1,0 +1,52 @@
+body {
+    background-color: aliceblue;
+}
+
+.main {
+    width: 1000px;
+    margin: auto;
+}
+
+.appbar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.block-header div {
+    display: flex;
+    align-items: center;
+}
+
+.block-header div h4,h5 {
+    margin-right: 12px;
+}
+
+.block-header span {
+    color: gray;
+    font-size: 16px;
+}
+
+textarea {
+    width: 100%;
+    font-size: 18px;
+    padding: 8px;
+}
+
+button {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 8px;
+    font-size: 18px;
+}
+
+.comment {
+    background-color: white;
+}

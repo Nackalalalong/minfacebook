@@ -1,0 +1,34 @@
+{% extends "appbar.html" %}
+
+{% block body %}
+    <a href="{% url 'create_post_form' %}"><button>create a post now!</button></a>
+
+    {% if posts %}
+        {% for post in posts %}
+            <div>
+                <div class="block-header">
+                    <div>
+                        <h4>{{post.owner}}</h4>
+                        <span>{{post.create_at}} {{post.updated_at}}</span>
+                    </div>
+                    {% if post.owner.id ==  uid %}
+                        <div>
+                            <a href="{% url 'edit_post' post.id %}" style="margin-right: 12px;"><button class="mini">edit</button></a>
+                            <form method="POST" action="{% url 'delete_post' post.id %}"
+                                onsubmit="return confirm('Do you really want to delete this post?');"
+                            >
+                                {% csrf_token %}
+                                <button class="mini" type="submit">delete</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+                <p>{{post.content}}</p>
+                <a href ="{% url 'post' post.id %}">see full post.</a>
+                <hr>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No posts now. Let's post something amazing!</p>
+    {% endif %}
+{% endblock %}

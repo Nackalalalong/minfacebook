@@ -1,0 +1,43 @@
+{% extends "appbar.html" %}
+{% block body %}
+    <div>
+        <div class="block-header">
+            <div>
+                <h4>{{post.owner}}</h4>
+                <span>{{post.create_at}} {{post.updated_at}}</span>
+            </div>
+            
+        </div>
+        <p>{{post.content}}</p>
+        <p style="text-align: center;">comments</p>
+        {% for comment in comments %}
+            <div class="block-header">
+                <div>
+                    <h5>{{comment.owner}}</h5>
+                    <span>{{post.create_at}} {{comment.updated_at}}</span>
+                </div>
+                {% if comment.owner.id ==  uid and method != "edit" %}
+                    <div>
+                        <a href="{% url 'edit_comment' comment.id %}" style="margin-right: 12px;"><button class="mini">edit</button></a>
+                        <form method="POST" action="{% url 'delete_comment' comment.id %}"
+                            onsubmit="return confirm('Do you really want to delete this comment?');"
+                        >
+                            {% csrf_token %}
+                            <button class="mini" type="submit">delete</button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+            <p>{{comment.content}}</p>
+            <hr>
+        {% endfor %}
+
+        {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+        <form action="{% url 'create_comment' post.id %}" method="post">
+            {% csrf_token %}
+            <textarea name='content' id='content' required></textarea>
+            <br>
+            <button type='submit'>comment</button>
+        </form>
+    </div>
+{% endblock %}
