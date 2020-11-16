@@ -10,11 +10,7 @@
                 <h1><a href="{% url 'index' %}">Facebook</a></h1>
             </div>
             <div style="text-align: center;font-size: 18px;">
-                {% if next %}
-                    <form action="/login/?next={{next}}" method="post">
-                {% else %}
-                    <form action="/login/" method="post">
-                {% endif %}
+                <form action="/login/" method="post">
                     {% csrf_token %}
                     <div>
                         <label for='username'>username</label>
