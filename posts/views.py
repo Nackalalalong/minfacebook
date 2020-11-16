@@ -1,8 +1,20 @@
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError, HttpResponseForbidden, HttpResponseBadRequest
 from .models import Post, Comment
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+
+def check_arguments(request_arr, args):
+    missing = []
+    for arg in args:
+        if arg not in request_arr:
+            missing.append(arg)
+    if missing:
+        response = {
+            'Missing argument': '%s' % ', '.join(missing),
+        }
+        return 1, HttpResponseBadRequest(response)
+    return 0,
 
 def index(request):
 
@@ -40,6 +52,9 @@ def create_post(request):
         return HttpResponseNotFound()
 
     try:
+        res = check_arguments(request.POST, ['content'])
+        if res[0]:
+            return res[1]
         content = request.POST['content']
         user = request.user
         post = Post.objects.create(content=content, owner=user)
@@ -55,6 +70,9 @@ def create_comment(request, *args, **kwargs):
         return HttpResponseNotFound()
 
     try:
+        res = check_arguments(request.POST, ['content'])
+        if res[0]:
+            return res[1]
         post_id = kwargs['post_id']
         post = get_object_or_404(Post, pk=post_id)
         content = request.POST['content']
@@ -71,7 +89,7 @@ def edit_post(request, *args, **kwargs):
         try:
             post_id = kwargs['post_id']
             post = get_object_or_404(Post, pk=post_id)
-            if post.owner.id != request.user.id:
+            if post.owner.id != request.user.id and not request.user.is_superuser:
                 return HttpResponseForbidden()
             context = {
             'method': 'edit',
@@ -84,9 +102,12 @@ def edit_post(request, *args, **kwargs):
 
     if request.method == "POST":
         try:
+            res = check_arguments(request.POST, ['content'])
+            if res[0]:
+                return res[1]
             post_id = kwargs['post_id']
             post = get_object_or_404(Post, pk=post_id)
-            if post.owner.id != request.user.id:
+            if post.owner.id != request.user.id and not request.user.is_superuser:
                 return HttpResponseForbidden()
             content = request.POST['content']
             post.content = content
@@ -103,7 +124,7 @@ def delete_post(request, *args, **kwargs):
         try:
             post_id = kwargs['post_id']
             post = get_object_or_404(Post, pk=post_id)
-            if post.owner.id != request.user.id:
+            if post.owner.id != request.user.id and not request.user.is_superuser:
                 return HttpResponseForbidden()
             post.delete()
             return render(request, 'appbar.html', {'message':'post deleted.'})
@@ -119,7 +140,7 @@ def edit_comment(request, *args, **kwargs):
         try:
             comment_id = kwargs['comment_id']
             comment = get_object_or_404(Comment, pk=comment_id)
-            if comment.owner.id != request.user.id:
+            if comment.owner.id != request.user.id and not request.user.is_superuser:
                 return HttpResponseForbidden()
             context = {'comment': comment}
             return render(request, 'posts/edit_comment.html', context)
@@ -129,9 +150,12 @@ def edit_comment(request, *args, **kwargs):
 
     if request.method == "POST":
         try:
+            res = check_arguments(request.POST, ['content'])
+            if res[0]:
+                return res[1]
             comment_id = kwargs['comment_id']
             comment = get_object_or_404(Comment, pk=comment_id)
-            if comment.owner.id != request.user.id:
+            if comment.owner.id != request.user.id and not request.user.is_superuser:
                 return HttpResponseForbidden()
             content = request.POST['content']
             comment.content = content
@@ -148,7 +172,7 @@ def delete_comment(request, *args, **kwargs):
         try:
             comment_id = kwargs['comment_id']
             comment = get_object_or_404(Comment, pk=comment_id)
-            if comment.owner.id != request.user.id:
+            if comment.owner.id != request.user.id and not request.user.is_superuser:
                 return HttpResponseForbidden()
             comment.delete()
             return render(request, 'appbar.html', {'message':'comment deleted.'})

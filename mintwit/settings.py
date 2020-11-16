@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'admin_honeypot',
     'app.apps.AppConfig',
     'posts.apps.PostsConfig',
     'django.contrib.admin',
