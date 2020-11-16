@@ -18,7 +18,7 @@ def homepage(request):
 
 def login(request):
     if request.method == "GET":
-        return  render(request, 'login.html')
+        return  render(request, 'login.html', {'next': request.GET.get('next')})
 
     if request.method == "POST":
         username = request.POST['username']
@@ -26,6 +26,6 @@ def login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             auth_login(request, user)
-            return redirect('/posts')
+            return redirect(request.GET.get('next', '/posts'))
         else:
             return render(request, 'login.html', {'error_message':'username or password not correct.'})
